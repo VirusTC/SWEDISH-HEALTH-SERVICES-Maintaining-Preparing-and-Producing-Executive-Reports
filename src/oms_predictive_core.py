@@ -81,7 +81,38 @@ class PredictiveOMSDatabase:
                 return round(D_next, 2)
             D_n = D_next
         return round(D_n, 2)
-
+warning_msg = f"CRITICAL OMS OUTFLOW ALERT -> Node {node_id} ({data['name']}). Predicted burden: {predicted_P} units. Cause: {data['cause_effect_log']}"
+self.console_output.tag_add("alert", "end - 2 lines", "end")
+self.console_output.tag_config("alert", foreground="#e06c75")
+self.log_telemetry(warning_msg)
+self.root.bell()
+# =====================================================================
+# BACKGROUND AUTOMATION LOOP (60-SECOND POLLING)
+# =====================================================================
+def toggle_background_loop(self):
+if not self.is_looping:
+self.is_looping = True
+self.toggle_btn.config(text="■ STOP BACKGROUND POLLING LOOP")
+self.loop_status_lbl.config(text="Status: ACTIVE (Polling every 60s)", foreground="#98c379")
+self.log_telemetry("Background system worker initialized. Automating inventory trend scans.")
+self.execute_scheduled_scan()
+else:
+self.is_looping = False
+self.toggle_btn.config(text="▶ START 60s REPLENISHMENT LOOP")
+self.loop_status_lbl.config(text="Status: IDLE (Manual Checks Enforced)", foreground="#e06c75")
+self.log_telemetry("Background system worker deactivated.")
+def execute_scheduled_scan(self):
+if not self.is_looping:
+return
+# Simulate an autonomous data-gathering trend analysis step
+self.log_telemetry("Executing predictive trend scan across active database structures...")
+self.evaluate_critical_thresholds()
+# Schedule the next polling pass exactly 60,000 milliseconds (60 seconds) out
+self.root.after(60000, self.execute_scheduled_scan)
+if name == "main":
+root = tk.Tk()
+app = OMSPredictiveConsole(root)
+root.mainloop()
 
 # =====================================================================
 # 2. STAFF WORKSTATION & RUNTIME CONSOLE
